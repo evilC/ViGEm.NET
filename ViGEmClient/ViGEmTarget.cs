@@ -1,5 +1,6 @@
 ﻿using System;
 using Nefarius.ViGEm.Client.Exceptions;
+using Nefarius.ViGEm.Client.Targets;
 
 namespace Nefarius.ViGEm.Client
 {
@@ -8,7 +9,7 @@ namespace Nefarius.ViGEm.Client
     /// <summary>
     ///     Provides a managed wrapper around a generic emulation target.
     /// </summary>
-    public abstract class ViGEmTarget : IDisposable
+    public abstract class ViGEmTarget : IDisposable, IAbstractedTarget
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ViGEmTarget"/> bound to a <see cref="ViGEmClient"/>.
@@ -107,6 +108,11 @@ namespace Nefarius.ViGEm.Client
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(false);
         }
+
+        public abstract void SendReport();
+        public abstract void SetButtonState(int buttonIndex, bool state);
+        public abstract void SetAxisState(int axisIndex, int state);
+        public abstract void SetPovDirectionState(PovDirections direction, bool state);
 
         // This code added to correctly implement the disposable pattern.
         public void Dispose()

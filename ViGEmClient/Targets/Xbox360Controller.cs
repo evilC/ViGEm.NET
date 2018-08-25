@@ -97,6 +97,26 @@ namespace Nefarius.ViGEm.Client.Targets
             base.Disconnect();
         }
 
+        public override void SendReport()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SetButtonState(int buttonIndex, bool state)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SetAxisState(int axisIndex, int state)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SetPovDirectionState(PovDirections direction, bool state)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public event Xbox360FeedbackReceivedEventHandler FeedbackReceived;
     }
 

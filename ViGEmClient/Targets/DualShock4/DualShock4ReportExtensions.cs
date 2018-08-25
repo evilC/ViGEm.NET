@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Nefarius.ViGEm.Client.Targets.DualShock4
 {
+    /*
     public static class DualShock4ReportExtensions
     {
         private static readonly Dictionary<string, int> _povAxisStates = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
@@ -152,4 +153,5 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
             report.Buttons = (ushort)buttons;
         }
     }
+    */
 }
