@@ -1,4 +1,6 @@
-﻿using Nefarius.ViGEm.Client.Exceptions;
+﻿using System;
+using System.Collections.Generic;
+using Nefarius.ViGEm.Client.Exceptions;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 
 namespace Nefarius.ViGEm.Client.Targets
@@ -9,6 +11,8 @@ namespace Nefarius.ViGEm.Client.Targets
     /// </summary>
     public class Xbox360Controller : ViGEmTarget
     {
+        public Xbox360Report Report { get; } = new Xbox360Report();
+
         private ViGEmClient.PVIGEM_X360_NOTIFICATION _notificationCallback;
 
         /// <inheritdoc />
@@ -99,22 +103,72 @@ namespace Nefarius.ViGEm.Client.Targets
 
         public override void SendReport()
         {
-            throw new System.NotImplementedException();
+            SendReport(Report);
         }
+
+        private readonly List<Xbox360Buttons> _buttonFlags = new List<Xbox360Buttons>
+        {
+            Xbox360Buttons.A, Xbox360Buttons.B, Xbox360Buttons.X, Xbox360Buttons.Y,
+            Xbox360Buttons.LeftShoulder, Xbox360Buttons.RightShoulder, Xbox360Buttons.LeftThumb, Xbox360Buttons.RightThumb,
+            Xbox360Buttons.Back, Xbox360Buttons.Start
+        };
 
         public override void SetButtonState(int buttonIndex, bool state)
         {
-            throw new System.NotImplementedException();
+            var button = _buttonFlags[buttonIndex];
+            SetButtonState(button, state);
+        }
+
+        public void SetButtonState(Xbox360Buttons button, bool state)
+        {
+            if (state)
+            {
+                Report.Buttons |= (ushort)button;
+            }
+            else
+            {
+                Report.Buttons &= (ushort)~button;
+            }
         }
 
         public override void SetAxisState(int axisIndex, int state)
         {
-            throw new System.NotImplementedException();
+            var value = (short) state;
+            switch (axisIndex)
+            {
+                case 0:
+                    Report.LeftThumbX = value;
+                    break;
+                case 1:
+                    Report.LeftThumbY = value;
+                    break;
+                case 2:
+                    Report.RightThumbX = value;
+                    break;
+                case 3:
+                    Report.RightThumbY = value;
+                    break;
+                case 4:
+                    Report.LeftTrigger = (byte)value;
+                    break;
+                case 5:
+                    Report.RightTrigger = (byte)value;
+                    break;
+                default:
+                    throw new Exception($"Unknown axis {axisIndex}");
+            }
+
         }
+
+        private readonly Dictionary<PovDirections, Xbox360Buttons> _povDirectionMappings = new Dictionary<PovDirections, Xbox360Buttons>
+        {
+            {PovDirections.Up, Xbox360Buttons.Up }, {PovDirections.Right, Xbox360Buttons.Right},
+            { PovDirections.Down, Xbox360Buttons.Down}, {PovDirections.Left, Xbox360Buttons.Left}
+        };
 
         public override void SetPovDirectionState(PovDirections direction, bool state)
         {
-            throw new System.NotImplementedException();
+            SetButtonState(_povDirectionMappings[direction], state);
         }
 
         public event Xbox360FeedbackReceivedEventHandler FeedbackReceived;

@@ -2,6 +2,7 @@
 
 namespace Nefarius.ViGEm.Client.Targets.Xbox360
 {
+    /*
     public static class Xbox360ReportExtensions
     {
         public static void SetButtons(this Xbox360Report report, params Xbox360Buttons[] buttons)
@@ -56,4 +57,5 @@ namespace Nefarius.ViGEm.Client.Targets.Xbox360
             }
         }
     }
+    */
 }

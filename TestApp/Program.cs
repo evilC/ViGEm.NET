@@ -24,26 +24,27 @@ namespace TestApp
 
         public TestApp()
         {
-            var ds4 = new DualShock4Controller(_client);
-            ds4.Connect();
+            //var controller = new DualShock4Controller(_client);
+            var controller = new Xbox360Controller(_client);
+            controller.Connect();
 
-            //ds4.SetButtonState(1, true);
-            //ds4.SendReport();
+            //controller.SetButtonState(1, true);
+            //controller.SendReport();
             ////Thread.Sleep(1000);
-            //ds4.SetButtonState(1, false);
-            //ds4.SendReport();
+            //controller.SetButtonState(1, false);
+            //controller.SendReport();
 
-            //ds4.SetAxisState(0, 65535);
-            //ds4.SendReport();
+            //controller.SetAxisState(0, -30000);
+            //controller.SendReport();
 
-            ds4.SetPovDirectionState(PovDirections.Up, true);
-            ds4.SendReport();
-            ds4.SetPovDirectionState(PovDirections.Right, true);
-            ds4.SendReport();
-            ds4.SetPovDirectionState(PovDirections.Up, false);
-            ds4.SendReport();
-            ds4.SetPovDirectionState(PovDirections.Right, false);
-            ds4.SendReport();
+            controller.SetPovDirectionState(PovDirections.Up, true);
+            controller.SendReport();
+            controller.SetPovDirectionState(PovDirections.Right, true);
+            controller.SendReport();
+            controller.SetPovDirectionState(PovDirections.Up, false);
+            controller.SendReport();
+            controller.SetPovDirectionState(PovDirections.Right, false);
+            controller.SendReport();
         }
     }
 }
