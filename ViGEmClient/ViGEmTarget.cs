@@ -110,9 +110,6 @@ namespace Nefarius.ViGEm.Client
         }
 
         public abstract void SendReport();
-        public abstract void SetButtonState(int buttonIndex, bool state);
-        public abstract void SetAxisState(int axisIndex, int state);
-        public abstract void SetPovDirectionState(PovDirections direction, bool state);
 
         // This code added to correctly implement the disposable pattern.
         public void Dispose()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Nefarius.ViGEm.Client.Targets.Xbox360
 {
@@ -32,7 +33,7 @@ namespace Nefarius.ViGEm.Client.Targets.Xbox360
         RightThumbY
     }
 
-    public class Xbox360Report
+    public class Xbox360Report : IViGEmReport
     {
         /// <summary>
         ///     Bitmask of the device digital buttons.
@@ -81,5 +82,70 @@ namespace Nefarius.ViGEm.Client.Targets.Xbox360
         ///     the right.
         /// </summary>
         public short RightThumbY { get; set; }
+
+        private readonly List<Xbox360Buttons> _buttonFlags = new List<Xbox360Buttons>
+        {
+            Xbox360Buttons.A, Xbox360Buttons.B, Xbox360Buttons.X, Xbox360Buttons.Y,
+            Xbox360Buttons.LeftShoulder, Xbox360Buttons.RightShoulder, Xbox360Buttons.LeftThumb, Xbox360Buttons.RightThumb,
+            Xbox360Buttons.Back, Xbox360Buttons.Start
+        };
+
+        public void SetButtonState(int buttonIndex, bool state)
+        {
+            var button = _buttonFlags[buttonIndex];
+            SetButtonState(button, state);
+        }
+
+        public void SetButtonState(Xbox360Buttons button, bool state)
+        {
+            if (state)
+            {
+                Buttons |= (ushort)button;
+            }
+            else
+            {
+                Buttons &= (ushort)~button;
+            }
+        }
+
+        public void SetAxisState(int axisIndex, int state)
+        {
+            // ToDo: Normalize values?
+            var value = (short)state;
+            switch (axisIndex)
+            {
+                case 0:
+                    LeftThumbX = value;
+                    break;
+                case 1:
+                    LeftThumbY = value;
+                    break;
+                case 2:
+                    RightThumbX = value;
+                    break;
+                case 3:
+                    RightThumbY = value;
+                    break;
+                case 4:
+                    LeftTrigger = (byte)value;
+                    break;
+                case 5:
+                    RightTrigger = (byte)value;
+                    break;
+                default:
+                    throw new Exception($"Unknown axis {axisIndex}");
+            }
+        }
+
+        private readonly Dictionary<PovDirections, Xbox360Buttons> _povDirectionMappings = new Dictionary<PovDirections, Xbox360Buttons>
+        {
+            {PovDirections.Up, Xbox360Buttons.Up }, {PovDirections.Right, Xbox360Buttons.Right},
+            { PovDirections.Down, Xbox360Buttons.Down}, {PovDirections.Left, Xbox360Buttons.Left}
+        };
+
+        public void SetPovDirectionState(PovDirections direction, bool state)
+        {
+            SetButtonState(_povDirectionMappings[direction], state);
+        }
     }
 }

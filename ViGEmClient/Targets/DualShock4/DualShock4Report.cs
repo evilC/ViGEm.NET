@@ -50,7 +50,7 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
         North = 0x0
     }
 
-    public class DualShock4Report
+    public class DualShock4Report : IViGEmReport
     {
         public DualShock4Report()
         {
@@ -77,5 +77,129 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
         public byte RightThumbX { get; set; }
 
         public byte RightThumbY { get; set; }
+
+
+
+        private readonly List<DualShock4Buttons> _buttonFlags = new List<DualShock4Buttons>
+        {
+            DualShock4Buttons.Cross, DualShock4Buttons.Circle, DualShock4Buttons.Square, DualShock4Buttons.Triangle,
+            DualShock4Buttons.ShoulderLeft, DualShock4Buttons.ShoulderRight, DualShock4Buttons.ThumbLeft, DualShock4Buttons.ThumbRight,
+            DualShock4Buttons.Options, DualShock4Buttons.Share,
+            DualShock4Buttons.TriggerLeft, DualShock4Buttons.TriggerRight
+        };
+
+        public void SetButtonState(int buttonIndex, bool state)
+        {
+            var button = _buttonFlags[buttonIndex];
+            if (state)
+            {
+                Buttons |= (ushort)button;
+            }
+            else
+            {
+                Buttons &= (ushort)~button;
+            }
+        }
+
+        public void SetAxisState(int axisIndex, int state)
+        {
+            // ToDo: Normalize values?
+            var value = (byte)state;
+            switch (axisIndex)
+            {
+                case 0:
+                    LeftThumbX = value;
+                    break;
+                case 1:
+                    LeftThumbY = value;
+                    break;
+                case 2:
+                    RightThumbX = value;
+                    break;
+                case 3:
+                    RightThumbY = value;
+                    break;
+                case 4:
+                    LeftTrigger = value;
+                    break;
+                case 5:
+                    RightTrigger = value;
+                    break;
+                default:
+                    throw new Exception($"Unkown axis index {axisIndex}");
+            }
+
+        }
+
+        private static readonly Dictionary<PovDirections, PovVector> IndexToVector = new Dictionary<PovDirections, PovVector>()
+        {
+            {PovDirections.Up, new PovVector("y", -1)},
+            {PovDirections.Right, new PovVector("x", 1)},
+            {PovDirections.Down, new PovVector("y", 1)},
+            {PovDirections.Left, new PovVector("x", -1)}
+        };
+
+        private struct PovAxes
+        {
+            public PovAxes(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+
+            public int X { get; }
+            public int Y { get; }
+        }
+
+        private struct PovVector
+        {
+            public PovVector(string axis, int direction)
+            {
+                Axis = axis;
+                Direction = direction;
+            }
+
+            public string Axis { get; }
+            public int Direction { get; }
+        }
+
+        // ToDo: Remove, calculate current state from state of report
+        private readonly Dictionary<string, int> _povAxisStates = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+        {
+            {"x", 0 }, {"y", 0}
+        };
+
+        private static readonly Dictionary<PovAxes, DualShock4DPadValues> AxisStatesToDpadValue = new Dictionary<PovAxes, DualShock4DPadValues>()
+        {
+            {new PovAxes(0, 0), DualShock4DPadValues.None},
+            {new PovAxes(0, -1), DualShock4DPadValues.North},
+            {new PovAxes(1, -1), DualShock4DPadValues.Northeast},
+            {new PovAxes(1, 0), DualShock4DPadValues.East},
+            {new PovAxes(1, 1), DualShock4DPadValues.Southeast},
+            {new PovAxes(0, 1), DualShock4DPadValues.South},
+            {new PovAxes(-1, 1), DualShock4DPadValues.Southwest},
+            {new PovAxes(-1, 0), DualShock4DPadValues.West},
+            {new PovAxes(-1, -1), DualShock4DPadValues.Northwest}
+        };
+
+
+        public void SetPovDirectionState(PovDirections direction, bool state)
+        {
+            var mapping = IndexToVector[direction];
+            var axisState = _povAxisStates[mapping.Axis];
+            var newState = state ? mapping.Direction : 0;
+            if (axisState == newState) return;
+            _povAxisStates[mapping.Axis] = newState;
+
+            var buttons = (int)Buttons;
+            // Clear all the Dpad bits
+            buttons &= ~15;
+
+            // Set new Dpad bits
+            buttons |= (int)AxisStatesToDpadValue[new PovAxes(_povAxisStates["x"], _povAxisStates["y"])];
+
+            Buttons = (ushort)buttons;
+
+        }
     }
 }
