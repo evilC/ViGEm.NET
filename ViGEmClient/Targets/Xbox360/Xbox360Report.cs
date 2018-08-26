@@ -96,17 +96,27 @@ namespace Nefarius.ViGEm.Client.Targets.Xbox360
             SetButtonState(button, state);
         }
 
-        public void SetAxisState(Xbox360Axes axis, int state)
+        public void SetButtonState(Xbox360Buttons button, bool state)
         {
-            // ToDo: Normalize values?
-            var value = (short)state;
+            if (state)
+            {
+                Buttons |= (ushort)button;
+            }
+            else
+            {
+                Buttons &= (ushort)~button;
+            }
+        }
+
+        public void SetAxisState(Xbox360Axes axis, short value)
+        {
             switch (axis)
             {
                 case Xbox360Axes.LeftTrigger:
-                    LeftTrigger = (byte)value;
+                    LeftTrigger = ShortToByte(value);
                     break;
                 case Xbox360Axes.RightTrigger:
-                    RightTrigger = (byte)value;
+                    RightTrigger = ShortToByte(value);
                     break;
                 case Xbox360Axes.LeftThumbX:
                     LeftThumbX = value;
@@ -125,22 +135,8 @@ namespace Nefarius.ViGEm.Client.Targets.Xbox360
             }
         }
 
-        public void SetButtonState(Xbox360Buttons button, bool state)
+        public void SetAxisState(int axisIndex, short value)
         {
-            if (state)
-            {
-                Buttons |= (ushort)button;
-            }
-            else
-            {
-                Buttons &= (ushort)~button;
-            }
-        }
-
-        public void SetAxisState(int axisIndex, int state)
-        {
-            // ToDo: Normalize values?
-            var value = (short)state;
             switch (axisIndex)
             {
                 case 0:
@@ -156,14 +152,19 @@ namespace Nefarius.ViGEm.Client.Targets.Xbox360
                     RightThumbY = value;
                     break;
                 case 4:
-                    LeftTrigger = (byte)value;
+                    LeftTrigger = ShortToByte(value);
                     break;
                 case 5:
-                    RightTrigger = (byte)value;
+                    RightTrigger = ShortToByte(value);
                     break;
                 default:
                     throw new Exception($"Unknown axis {axisIndex}");
             }
+        }
+
+        private static byte ShortToByte(short input)
+        {
+            return (byte)((input / 256) + 128);
         }
 
         private readonly Dictionary<PovDirections, Xbox360Buttons> _povDirectionMappings = new Dictionary<PovDirections, Xbox360Buttons>

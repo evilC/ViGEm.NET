@@ -106,10 +106,9 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
             SetButtonState(button, state);
         }
 
-        public void SetAxisState(DualShock4Axes axis, int state)
+        public void SetAxisState(DualShock4Axes axis, short state)
         {
-            // ToDo: Normalize values?
-            var value = (byte)state;
+            var value = ShortToByte(state);
             switch (axis)
             {
                 case DualShock4Axes.LeftTrigger:
@@ -135,10 +134,9 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
             }
         }
 
-        public void SetAxisState(int axisIndex, int state)
+        public void SetAxisState(int axisIndex, short state)
         {
-            // ToDo: Normalize values?
-            var value = (byte)state;
+            var value = ShortToByte(state);
             switch (axisIndex)
             {
                 case 0:
@@ -163,6 +161,11 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
                     throw new Exception($"Unkown axis index {axisIndex}");
             }
 
+        }
+
+        private static byte ShortToByte(short input)
+        {
+            return (byte)((input / 256) + 128);
         }
 
         private static readonly Dictionary<PovDirections, PovVector> IndexToVector = new Dictionary<PovDirections, PovVector>()

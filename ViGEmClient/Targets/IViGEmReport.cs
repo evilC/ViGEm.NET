@@ -11,8 +11,8 @@ namespace Nefarius.ViGEm.Client.Targets
         void SetButtonState(TButtons button, bool state);
         void SetButtonState(int buttonIndex, bool state);
 
-        void SetAxisState(TAxes axis , int state);
-        void SetAxisState(int axisIndex, int state);
+        void SetAxisState(TAxes axis , short state);
+        void SetAxisState(int axisIndex, short state);
 
         void SetPovDirectionState(PovDirections povDirection, bool state);
     }
