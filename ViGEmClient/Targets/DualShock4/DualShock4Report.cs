@@ -50,7 +50,7 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
         North = 0x0
     }
 
-    public class DualShock4Report : IViGEmReport
+    public class DualShock4Report : IViGEmReport<DualShock4Buttons, DualShock4Axes>
     {
         public DualShock4Report()
         {
@@ -88,9 +88,8 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
             DualShock4Buttons.TriggerLeft, DualShock4Buttons.TriggerRight
         };
 
-        public void SetButtonState(int buttonIndex, bool state)
+        public void SetButtonState(DualShock4Buttons button, bool state)
         {
-            var button = _buttonFlags[buttonIndex];
             if (state)
             {
                 Buttons |= (ushort)button;
@@ -98,6 +97,41 @@ namespace Nefarius.ViGEm.Client.Targets.DualShock4
             else
             {
                 Buttons &= (ushort)~button;
+            }
+        }
+
+        public void SetButtonState(int buttonIndex, bool state)
+        {
+            var button = _buttonFlags[buttonIndex];
+            SetButtonState(button, state);
+        }
+
+        public void SetAxisState(DualShock4Axes axis, int state)
+        {
+            // ToDo: Normalize values?
+            var value = (byte)state;
+            switch (axis)
+            {
+                case DualShock4Axes.LeftTrigger:
+                    LeftTrigger = value;
+                    break;
+                case DualShock4Axes.RightTrigger:
+                    RightTrigger = value;
+                    break;
+                case DualShock4Axes.LeftThumbX:
+                    LeftThumbX = value;
+                    break;
+                case DualShock4Axes.LeftThumbY:
+                    LeftThumbY = value;
+                    break;
+                case DualShock4Axes.RightThumbX:
+                    RightThumbX = value;
+                    break;
+                case DualShock4Axes.RightThumbY:
+                    RightThumbY = value;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(axis), axis, null);
             }
         }
 

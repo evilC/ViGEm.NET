@@ -33,7 +33,7 @@ namespace Nefarius.ViGEm.Client.Targets.Xbox360
         RightThumbY
     }
 
-    public class Xbox360Report : IViGEmReport
+    public class Xbox360Report : IViGEmReport<Xbox360Buttons, Xbox360Axes>
     {
         /// <summary>
         ///     Bitmask of the device digital buttons.
@@ -94,6 +94,35 @@ namespace Nefarius.ViGEm.Client.Targets.Xbox360
         {
             var button = _buttonFlags[buttonIndex];
             SetButtonState(button, state);
+        }
+
+        public void SetAxisState(Xbox360Axes axis, int state)
+        {
+            // ToDo: Normalize values?
+            var value = (short)state;
+            switch (axis)
+            {
+                case Xbox360Axes.LeftTrigger:
+                    LeftTrigger = (byte)value;
+                    break;
+                case Xbox360Axes.RightTrigger:
+                    RightTrigger = (byte)value;
+                    break;
+                case Xbox360Axes.LeftThumbX:
+                    LeftThumbX = value;
+                    break;
+                case Xbox360Axes.LeftThumbY:
+                    LeftThumbY = value;
+                    break;
+                case Xbox360Axes.RightThumbX:
+                    RightThumbX = value;
+                    break;
+                case Xbox360Axes.RightThumbY:
+                    RightThumbY = value;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(axis), axis, null);
+            }
         }
 
         public void SetButtonState(Xbox360Buttons button, bool state)
